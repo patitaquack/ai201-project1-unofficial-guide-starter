@@ -43,7 +43,7 @@ When a student is experiencing mental health issues such as anxiety, depression,
      numbers fit the structure of your documents.
      A review-heavy corpus warrants different chunking than a long FAQ. -->
 
-**Chunk size:** ~ 500 tokens ( about 2,000 chars). One entry per provider in the referral list, one comment per Reddit thread. 
+**Chunk size:** ~ 200 tokens ( about 800 chars). One entry per provider in the referral list, one comment per Reddit thread. 
 
 **Overlap:** ~50 tokens  for the prose handouts ( small articles or specific sections)
 and service web pages. Overlap = 0 for the referral list. Online-Resources
@@ -111,6 +111,9 @@ model if evaluation showed accuracy still falling short.
      You can use ASCII art, a Mermaid diagram, or embed a sketch as an image.
      You'll use this diagram as context when prompting AI tools to implement each stage. -->
 
+![Pipeline diagram](images/Mermaid.png)
+
+
 ---
 
 ## AI Tool Plan
@@ -125,8 +128,21 @@ model if evaluation showed accuracy still falling short.
      "I'll give Claude my Chunking Strategy section and ask it to implement chunk_text()
      with my specified chunk size and overlap" is a plan. -->
 
+i will be using Claude, to help me, I will share my chunking plan and my pipeline. I will ask for suggestions on how accurate output will be with my chunk size and if my plan will result in succesful responses. 
+I expect Claude to correct my sizes to better chunk pieces. 
+I will verify by making sure that chunk does not exceed 256 limit. And that information like the referral lists are outputted corrrectly. 
+
+
 **Milestone 3 — Ingestion and chunking:**
 
+I'll give Claude my Documents section and my Chunking plan (~200-token chunks and  overlap rules). 
+ I expect for it to  suggest corrections to my chunk size if needed. I'll verify
+by checking that no chunk exceeds the model's 256-token limit, that the referral-list entries come out whole (each provider's name kept with their contact info), and that the extracted PDF text isn't noisy before chunking.
+
+"Here is my Documents section, chunking strategy section, and pipeline mermaid diagram. Write a Python script that loads these sources by type — PyPDF for the PDFs, requests, and the UTEP pages, and reads the Reddit thread from a local .txt provided. Chunk : one entry per referral provider, one comment per Reddit thread, by section for the handouts. Then print a chunk so I can inspect."
+
+
 **Milestone 4 — Embedding and retrieval:**
+
 
 **Milestone 5 — Generation and interface:**
