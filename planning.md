@@ -144,5 +144,12 @@ by checking that no chunk exceeds the model's 256-token limit, that the referral
 
 **Milestone 4 — Embedding and retrieval:**
 
+I will share my Retrieval Approach section (all-MiniLM-L6-v2, top-k = 3) and the chunk format. I expect it to suggest code that embeds each chunk with sentence-transformers, stores the vectors plus metadata in ChromaDB, and a retrieve()
+function that returns the closest chunks to a query by distance score. I'll verify by
+running 3  questions and checking the correct output for each. 
+
+
+
 
 **Milestone 5 — Generation and interface:**
+I will share my chunk format and grounding requirement. Must cite the real UTEP source link. I expect it to suggest something that sends the question plus the top chunks to Groq.I'll verify by running my evaluation questions and check each answer is accurate to the links for UTEP resources, and that asking something my documents don't cover makes the system say it doesn't have enough information instead of making something up. 

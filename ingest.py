@@ -42,16 +42,17 @@ CHUNKS_OUT = Path(__file__).parent / "chunks.jsonl"
 # Save each source from planning.md into documents/ under the matching name.
 # Files not listed here default to ("<filename>", "prose").
 SOURCES: dict[str, tuple[str, str]] = {
-    "timelycare.html":            ("TimelyCare virtual care",            "prose"),
-    "counseling-services.html":   ("UTEP Counseling Services",           "prose"),
-    "miner-support.html":         ("UTEP Miner Support",                 "prose"),
-    "reddit-thread.txt":          ("r/UTEP mental health thread",        "collection"),
-    "community-referral-book.pdf":("Community referral directory",       "collection"),
-    "depression.pdf":             ("Depression handout",                 "prose"),
-    "test-anxiety.pdf":           ("Test anxiety handout",               "prose"),
-    "alcohol-or-drugs.pdf":       ("Alcohol/drugs handout",              "prose"),
-    "stress-management.pdf":      ("Stress management handout",          "prose"),
-    "online-resources.html":      ("Online counseling resources",        "collection"),
+    "timelycare.txt":      ("TimelyCare virtual care",      "prose"),
+    "counseling.txt":      ("UTEP Counseling Services",     "prose"),
+    "studentsupport.txt":  ("UTEP Miner Support",           "prose"),
+    "stress.txt":          ("Stress management handout",    "prose"),
+    "testanxiety.txt":     ("Test anxiety handout",         "prose"),
+    "substanceabuse.txt":  ("Alcohol/drugs handout",        "prose"),
+    "referrals.txt":       ("Community referral directory", "collection"),
+    "onlinesupport.txt":   ("Online counseling resources",  "collection"),
+    # Add these two when collected (they complete your 10 sources):
+    "depression.txt":      ("Depression handout",           "prose"),
+    "reddit.txt":          ("r/UTEP mental health thread",  "collection"),
 }
 
 # Records within a "collection" file are separated by a blank line.
@@ -132,15 +133,22 @@ def clean_text(text: str) -> str:
     """Clean extracted text before chunking.
 
     Fixes common PDF/HTML extraction artifacts: HTML entities (&amp;, &#39;,
-    &nbsp;), non-breaking/zero-width characters, hyphenated words broken across
-    lines, lines that are just a page number, and runs of blank lines. Final
-    whitespace normalization is left to chunk.normalize_whitespace().
+    &nbsp;), non-breaking/zero-width characters, inline image filenames
+    (talknow-icon.pngTalk Now), hyphenated words broken across lines, bare
+    page-number lines, table-of-contents dotted-leader lines (Aliviane …… 6),
+    and runs of blank lines. Final whitespace normalization is left to
+    chunk.normalize_whitespace().
     """
     text = html.unescape(text)                            # &amp; &#39; &nbsp; -> & ' \xa0
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = text.replace("\xa0", " ").replace("​", "")  # nbsp, zero-width space
+    text = re.sub(r"[\w./-]+\.(?:png|jpe?g|gif|svg)", "", text, flags=re.I)  # image filenames
     text = re.sub(r"(\w)-\n(\w)", r"\1\2", text)          # de-hyphenate line breaks
-    lines = [ln for ln in text.split("\n") if not re.fullmatch(r"\s*\d+\s*", ln)]
+    lines = [
+        ln for ln in text.split("\n")
+        if not re.fullmatch(r"\s*\d+\s*", ln)             # bare page numbers
+        and not re.search(r"[.…]{4,}", ln)           # TOC dotted leaders
+    ]
     text = "\n".join(lines)
     text = re.sub(r"\n{3,}", "\n\n", text)                # collapse blank-line runs
     return text.strip()
